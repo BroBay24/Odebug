@@ -58,8 +58,8 @@ def documentation_checker_node(state: DebugState) -> dict:
     user_prompt = f"""## Context from Previous Agents
 Error type: {error_type}
 File: {file_path}
-Root cause (from Code Tracer): {root_cause}
-Code snippet (from Code Tracer): {code_snippet}
+Root cause: {root_cause}
+Code snippet: {code_snippet}
 
 ## Automated Convention Check (preliminary)
 {conv}
@@ -67,7 +67,8 @@ Code snippet (from Code Tracer): {code_snippet}
 ## Task
 Verify the above findings against Odoo v17 Community Edition conventions. Check if the root cause and code analysis are correct according to Odoo framework standards."""
 
-    response = llm.chat(SYSTEM_PROMPT, user_prompt)
+    from config import Config
+    response = llm.chat(SYSTEM_PROMPT, user_prompt, model=Config.AGENT_MODEL_DOC_CHECKER)
 
     verified = ""
     notes = ""

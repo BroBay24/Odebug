@@ -5,23 +5,25 @@ from config import Config
 
 
 class LLMClient:
-    """Unified LLM client supporting Ollama (local) and OpenAI-compatible API."""
+    """Unified LLM client supporting Ollama (local) and OpenAI-compatible API.
+    Each call can specify a different model, allowing multi-model per-agent configuration."""
 
     def __init__(self, backend: str | None = None):
         self.backend = backend or Config.LLM_BACKEND
 
-    def chat(self, system_prompt: str, user_prompt: str, temperature: float = 0.1) -> str:
+    def chat(self, system_prompt: str, user_prompt: str, model: str | None = None, temperature: float = 0.1) -> str:
+        model_name = model or Config.OLLAMA_MODEL
         if self.backend == "ollama":
-            return self._chat_ollama(system_prompt, user_prompt, temperature)
+            return self._chat_ollama(system_prompt, user_prompt, model_name, temperature)
         elif self.backend == "openai":
-            return self._chat_openai(system_prompt, user_prompt, temperature)
+            return self._chat_openai(system_prompt, user_prompt, model_name, temperature)
         else:
             raise ValueError(f"Unknown LLM backend: {self.backend}")
 
-    def _chat_ollama(self, system_prompt: str, user_prompt: str, temperature: float) -> str:
+    def _chat_ollama(self, system_prompt: str, user_prompt: str, model: str, temperature: float) -> str:
         url = f"{Config.OLLAMA_HOST}/api/chat"
         payload = {
-            "model": Config.OLLAMA_MODEL,
+            "model": model,
             "messages": [
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt},
@@ -34,14 +36,14 @@ class LLMClient:
         data = resp.json()
         return data["message"]["content"]
 
-    def _chat_openai(self, system_prompt: str, user_prompt: str, temperature: float) -> str:
+    def _chat_openai(self, system_prompt: str, user_prompt: str, model: str, temperature: float) -> str:
         url = f"{Config.OPENAI_BASE_URL}/chat/completions"
         headers = {
             "Authorization": f"Bearer {Config.OPENAI_API_KEY}",
             "Content-Type": "application/json",
         }
         payload = {
-            "model": Config.OPENAI_MODEL,
+            "model": model,
             "messages": [
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt},

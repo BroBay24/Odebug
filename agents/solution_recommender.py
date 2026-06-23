@@ -95,7 +95,8 @@ def solution_recommender_node(state: DebugState) -> dict:
 ## Task
 Synthesize all findings and produce a concrete, actionable fix recommendation for this {error_type} in the Odoo v17 CE module."""
 
-    response = llm.chat(SYSTEM_PROMPT, user_prompt)
+    from config import Config
+    response = llm.chat(SYSTEM_PROMPT, user_prompt, model=Config.AGENT_MODEL_SOLUTION_RECOMMENDER)
 
     return {
         "recommendation": response,

@@ -60,12 +60,13 @@ You are the FIRST agent in the pipeline. Your job is to read a Python traceback 
 
 
 def error_reader_node(state: DebugState) -> dict:
+    from config import Config
     traceback = state.get("traceback", "")
     llm = LLMClient()
     user_prompt = f"Analyze this Odoo module traceback and classify the error:\n\n{traceback}"
 
     try:
-        response = llm.chat(SYSTEM_PROMPT, user_prompt)
+        response = llm.chat(SYSTEM_PROMPT, user_prompt, model=Config.AGENT_MODEL_ERROR_READER)
         cleaned = response.strip().strip("`").replace("json\n", "", 1).replace("json", "", 1).strip()
         result = json.loads(cleaned)
     except (json.JSONDecodeError, Exception):

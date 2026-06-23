@@ -78,7 +78,8 @@ Exception: {exception_msg}
 ## Task
 Analyze the code at the indicated location and identify the root cause of the {error_type}."""
 
-    response = llm.chat(SYSTEM_PROMPT, user_prompt)
+    from config import Config
+    response = llm.chat(SYSTEM_PROMPT, user_prompt, model=Config.AGENT_MODEL_CODE_TRACER)
 
     root_cause = ""
     layer = ""

@@ -62,7 +62,8 @@ def single_agent_node(state: DebugState) -> dict:
 ## Task
 Perform the entire debugging process in a single pass and provide a complete fix recommendation."""
 
-    response = llm.chat(SYSTEM_PROMPT, user_prompt)
+    from config import Config
+    response = llm.chat(SYSTEM_PROMPT, user_prompt, model=Config.AGENT_MODEL_SINGLE)
 
     error_type = ""
     file_path = ""
